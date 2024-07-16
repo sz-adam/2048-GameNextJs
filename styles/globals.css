@@ -2,10 +2,14 @@
   --pixel-size: 8px;
 
   /*background*/
-  --primary-background: #faf8ef;
-  --primary-text-color: #776e65;
+  --primary-background: #faf8ef; 
   --secondary-background: #bbada0;
   --cell-background: #cac1b5;
+  --tile-background: #eee4da;
+
+  /*Colors*/
+  --primary-text-color: #776e65;
+
 }
 
 body {
