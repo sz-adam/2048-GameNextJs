@@ -10,6 +10,19 @@ export default function Board() {
 
   // Egy referencia a komponens inicializálásának követésére
   const initialized = useRef(false);
+
+  // Billentyűlenyomás kezelő függvény
+  const handleKeydown = (e: KeyboardEvent) => {
+    e.preventDefault();
+    switch (e.code) {
+      case "ArrowUp":
+        dispatch({ type: "move_up" }); // 'move_up'
+        break;
+      case "ArrowDown":
+        dispatch({ type: "move_down" }); // 'move_down'
+        break;
+    }
+  };
   const renderGrid = () => {
     //üres tömb ahová a cella elemek kerülnek
     const cells: JSX.Element[] = [];
@@ -23,23 +36,36 @@ export default function Board() {
     return cells;
   };
 
-  const renderTiles = () => { // Függvény a csempék renderelése
-    return Object.values(gameState.tiles).map( // Az összes csempe értékének lekérése és azok leképezése JSX elemekké
-      (tile: TileModel, index: number) => { // Minden csempére végrehajtja a következő függvényt
+  const renderTiles = () => {
+    // Függvény a csempék renderelése
+    return Object.values(gameState.tiles).map(
+      // Az összes csempe értékének lekérése és azok leképezése JSX elemekké
+      (tile: TileModel, index: number) => {
+        // Minden csempére végrehajtja a következő függvényt
         return <Tile key={`${index}`} {...tile} />; // Tile komponens renderelése egyedi kulccsal és az összes csempe tulajdonságával
       }
     );
   };
-  
-  useEffect(() => { // useEffect hook, amely az első renderelés után fut le
-    if (initialized.current === false) { // Ellenőrzi, hogy a komponens már inicializálva van-e
+
+  useEffect(() => {
+    // useEffect hook, amely az első renderelés után fut le
+    if (initialized.current === false) {
+      // Ellenőrzi, hogy a komponens már inicializálva van-e
       dispatch({ type: "create_tile", tile: { position: [0, 1], value: 2 } }); // Az első csempe létrehozása a pozíció [0, 1] és érték 2
       dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } }); // A második csempe létrehozása a pozíció [0, 2] és érték 2
-  
+
       initialized.current = true; // Beállítja, hogy a komponens inicializálva van
     }
-  }, []); 
-  
+  }, []);
+
+  //useEffect a billentyűzet lenyomásához
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, []);
+
   return (
     <div className={styles.board}>
       <div className={styles.tiles}>{renderTiles()}</div>
