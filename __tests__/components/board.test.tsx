@@ -12,4 +12,12 @@ describe("Board", () => {
     //Ellenőrzi hogy 16db jött-e létre
     expect(cellElements.length).toEqual(16);
   });
+
+  it("should render Board with 2 tiles", () => { // Leírja a teszt nevét: "A tábla 2 csempével kell renderelődjön"
+    const { container } = render(<Board />); // Rendereli a Board komponenst és kinyeri a container elemet a renderelési eredményből
+    const tiles = container.querySelectorAll(".tile"); // Kiválasztja az összes elemet a container-ből, amelyeknek az osztálya "tile"
+  
+    expect(tiles.length).toEqual(2); // Elvárás: az összes "tile" osztályú elem számának 2-nek kell lennie
+  });
+  
 });

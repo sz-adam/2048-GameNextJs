@@ -1,7 +1,15 @@
 import styles from "@/styles/board.module.css";
+import { useEffect, useReducer, useRef } from "react";
+import gameReducer, { initialState } from "@/reducers/game-reducer";
 import Tile from "./tile";
+import { Tile as TileModel } from "@/models/tile";
 
 export default function Board() {
+  // A játékállapot (state) és az állapotkezelő (reducer) használata
+  const [gameState, dispatch] = useReducer(gameReducer, initialState);
+
+  // Egy referencia a komponens inicializálásának követésére
+  const initialized = useRef(false);
   const renderGrid = () => {
     //üres tömb ahová a cella elemek kerülnek
     const cells: JSX.Element[] = [];
@@ -14,10 +22,27 @@ export default function Board() {
     }
     return cells;
   };
+
+  const renderTiles = () => { // Függvény a csempék renderelése
+    return Object.values(gameState.tiles).map( // Az összes csempe értékének lekérése és azok leképezése JSX elemekké
+      (tile: TileModel, index: number) => { // Minden csempére végrehajtja a következő függvényt
+        return <Tile key={`${index}`} {...tile} />; // Tile komponens renderelése egyedi kulccsal és az összes csempe tulajdonságával
+      }
+    );
+  };
+  
+  useEffect(() => { // useEffect hook, amely az első renderelés után fut le
+    if (initialized.current === false) { // Ellenőrzi, hogy a komponens már inicializálva van-e
+      dispatch({ type: "create_tile", tile: { position: [0, 1], value: 2 } }); // Az első csempe létrehozása a pozíció [0, 1] és érték 2
+      dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } }); // A második csempe létrehozása a pozíció [0, 2] és érték 2
+  
+      initialized.current = true; // Beállítja, hogy a komponens inicializálva van
+    }
+  }, []); 
+  
   return (
     <div className={styles.board}>
-        <div className={styles.tiles}> <Tile /></div>
-       
+      <div className={styles.tiles}>{renderTiles()}</div>
       <div className={styles.grid}>{renderGrid()}</div>
     </div>
   );
