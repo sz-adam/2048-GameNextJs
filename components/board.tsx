@@ -21,6 +21,12 @@ export default function Board() {
       case "ArrowDown":
         dispatch({ type: "move_down" }); // 'move_down'
         break;
+      case "ArrowLeft":
+        dispatch({ type: "move_left" }); // 'move_left'
+        break;
+      case "ArrowRight":
+        dispatch({ type: "move_right" }); // 'move_Right'
+        break;
     }
   };
   const renderGrid = () => {
@@ -43,7 +49,7 @@ export default function Board() {
       (tile: TileModel, index: number) => {
         // Minden csempére végrehajtja a következő függvényt
         return <Tile key={`${index}`} {...tile} />; // Tile komponens renderelése egyedi kulccsal és az összes csempe tulajdonságával
-      }
+      },
     );
   };
 

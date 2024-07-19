@@ -10,7 +10,9 @@ type State = { board: string[][]; tiles: TileMap };
 type Action =
   | { type: "create_tile"; tile: Tile }
   | { type: "move_up" }
-  | { type: "move_down" };
+  | { type: "move_down" }
+  | { type: "move_left" }
+  | { type: "move_right" };
 
 // Függvény a játék tábla létrehozásához, alapértelmezett méret 4x4
 function createBoard() {
@@ -28,7 +30,7 @@ export const initialState: State = { board: createBoard(), tiles: {} };
 // gameReducer függvény exportálása, ami kezeli az állapot változásokat
 export default function gameReducer(
   state: State = initialState, // Alapértelmezett állapot az initialState
-  action: Action // Akció objektum
+  action: Action, // Akció objektum
 ) {
   switch (
     action.type // Az akció típusa alapján történő elágazás
@@ -51,18 +53,18 @@ export default function gameReducer(
     }
     //mozgatás felfelé
     case "move_up": {
-      const newBoard = createBoard(); //üres tábla 
+      const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = 0; //új kordináták lekérése
-        for (let y = 0; y < tileCountPerDimension; y++) { 
+        for (let y = 0; y < tileCountPerDimension; y++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
           //ha létezik a csempe
           if (!isNil(tileId)) {
             //új táblára helyezzük
-            newBoard[newY][x] = tileId; 
+            newBoard[newY][x] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
               ...state.tiles[tileId],
@@ -82,24 +84,85 @@ export default function gameReducer(
 
     //mozgatás lefelé
     case "move_down": {
-      const newBoard = createBoard(); //üres tábla 
+      const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = tileCountPerDimension - 1; //új y kordináták lekérése
         for (let y = 0; y < tileCountPerDimension; y++) {
-           // Az aktuális csempe azonosítójának lekérése
+          // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
-           //ha létezik a csempe
+          //ha létezik a csempe
           if (!isNil(tileId)) {
             // Az új táblára helyezés
             newBoard[newY][x] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
               ...state.tiles[tileId],
-              position: [x, newY],  //új pozició beállítása
+              position: [x, newY], //új pozició beállítása
             };
             newY--; //kordináta csökkentése
+          }
+        }
+      }
+      return {
+        ...state,
+        board: newBoard,
+        tiles: newTiles,
+      };
+    }
+    //bal mozgás
+    case "move_left": {
+      const newBoard = createBoard(); //üres tábla
+      const newTiles: TileMap = {}; //csempe térkép inicializálása
+
+      for (let y = 0; y < tileCountPerDimension; y++) {
+        let newX = 0; //új kordináták lekérése
+        for (let x = 0; x < tileCountPerDimension; x++) {
+          // Az aktuális csempe azonosítójának lekérése
+          const tileId = state.board[y][x];
+          //ha létezik a csempe
+          if (!isNil(tileId)) {
+            //új táblára helyezzük
+            newBoard[y][newX] = tileId;
+            //aktuális csempe másolása
+            newTiles[tileId] = {
+              ...state.tiles[tileId],
+              //új pozició beállítása
+              position: [newX, y],
+            };
+            newX++; //kordináta növelése
+          }
+        }
+      }
+      return {
+        ...state,
+        board: newBoard,
+        tiles: newTiles,
+      };
+    }
+
+    //jobb oldalra mozgás
+    case "move_right": {
+      const newBoard = createBoard(); //üres tábla
+      const newTiles: TileMap = {}; //csempe térkép inicializálása
+
+      for (let y = 0; y < tileCountPerDimension; y++) {
+        let newX = tileCountPerDimension - 1; //új kordináták lekérése
+        for (let x = 0; x < tileCountPerDimension; x++) {
+          // Az aktuális csempe azonosítójának lekérése
+          const tileId = state.board[y][x];
+          //ha létezik a csempe
+          if (!isNil(tileId)) {
+            //új táblára helyezzük
+            newBoard[y][newX] = tileId;
+            //aktuális csempe másolása
+            newTiles[tileId] = {
+              ...state.tiles[tileId],
+              //új pozició beállítása
+              position: [newX, y],
+            };
+            newX--; //kordináta növelése
           }
         }
       }
