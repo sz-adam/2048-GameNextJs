@@ -58,19 +58,35 @@ export default function gameReducer(
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = 0; //új kordináták lekérése
+
+        let previusTile: Tile | undefined;
+
         for (let y = 0; y < tileCountPerDimension; y++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
+          //tileId változoba mentése
+          const currentTile = state.tiles[tileId];
           //ha létezik a csempe
           if (!isNil(tileId)) {
+            if (previusTile?.value === currentTile.value) {
+              //létrehoz egy új csempét a currenTile alapján és egyel fentebb mozgatja
+              newTiles[tileId] = {
+                ...currentTile,
+                position: [x, newY - 1],
+              };
+              previusTile = undefined;
+              continue;
+            }
+
             //új táblára helyezzük
             newBoard[newY][x] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
-              ...state.tiles[tileId],
+              ...currentTile,
               //új pozició beállítása
               position: [x, newY],
             };
+            previusTile = newTiles[tileId];
             newY++; //kordináta növelése
           }
         }
@@ -89,18 +105,29 @@ export default function gameReducer(
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = tileCountPerDimension - 1; //új y kordináták lekérése
+        let previusTile: Tile | undefined;
         for (let y = 0; y < tileCountPerDimension; y++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
+          const currenTile = state.tiles[tileId];
           //ha létezik a csempe
           if (!isNil(tileId)) {
+            if (previusTile?.value === currenTile.value) {
+              newTiles[tileId] = {
+                ...currenTile,
+                position: [x, newY + 1],
+              };
+              previusTile = undefined;
+              continue;
+            }
             // Az új táblára helyezés
             newBoard[newY][x] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
-              ...state.tiles[tileId],
+              ...currenTile,
               position: [x, newY], //új pozició beállítása
             };
+            previusTile = newTiles[tileId];
             newY--; //kordináta csökkentése
           }
         }
@@ -118,19 +145,30 @@ export default function gameReducer(
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = 0; //új kordináták lekérése
+        let previusTile: Tile | undefined;
         for (let x = 0; x < tileCountPerDimension; x++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
+          const currentTile = state.tiles[tileId];
           //ha létezik a csempe
           if (!isNil(tileId)) {
+            if (previusTile?.value === currentTile.value) {
+              newTiles[tileId] = {
+                ...currentTile,
+                position: [newX - 1, y],
+              };
+              previusTile = undefined;
+              continue;
+            }
             //új táblára helyezzük
             newBoard[y][newX] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
-              ...state.tiles[tileId],
+              ...currentTile,
               //új pozició beállítása
               position: [newX, y],
             };
+            previusTile = newTiles[tileId];
             newX++; //kordináta növelése
           }
         }
@@ -149,19 +187,31 @@ export default function gameReducer(
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = tileCountPerDimension - 1; //új kordináták lekérése
+        let previusTile: Tile | undefined;
+
         for (let x = 0; x < tileCountPerDimension; x++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
+          const currentTile = state.tiles[tileId];
           //ha létezik a csempe
           if (!isNil(tileId)) {
+            if (previusTile?.value === currentTile.value) {
+              newTiles[tileId] = {
+                ...currentTile,
+                position: [newX + 1, y],
+              };
+              previusTile = undefined;
+              continue;
+            }
             //új táblára helyezzük
             newBoard[y][newX] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
-              ...state.tiles[tileId],
+              ...currentTile,
               //új pozició beállítása
               position: [newX, y],
             };
+            previusTile = newTiles[tileId];
             newX--; //kordináta növelése
           }
         }
