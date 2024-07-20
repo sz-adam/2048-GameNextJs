@@ -88,7 +88,7 @@ export default function gameReducer(
           if (!isNil(tileId)) {
             if (previusTile?.value === currentTile.value) {
               newTiles[previusTile.id as string] = {
-                ...currentTile,
+                ...previusTile,
                 value: previusTile.value * 2,
               };
 
@@ -137,7 +137,7 @@ export default function gameReducer(
           if (!isNil(tileId)) {
             if (previusTile?.value === currentTile.value) {
               newTiles[previusTile.id as string] = {
-                ...currentTile,
+                ...previusTile,
                 value: previusTile.value * 2,
               };
               newTiles[tileId] = {
