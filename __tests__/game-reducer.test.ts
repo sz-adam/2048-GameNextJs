@@ -6,40 +6,41 @@ import { useReducer } from "react";
 
 // Tesztesetek leírása a "gameReducer"-hez.
 describe("gameReducer", () => {
-    //TODO csempe eltávolitása
-    describe("clean up", () => {
-      it("should remove tiles that are not referenced on the board state", () => {
-        const tile1: Tile = {
-          position: [0, 1],
-          value: 2,
-        };
-        const tile2: Tile = {
-          position: [0, 3],
-          value: 2,
-        };
-    
-        // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
-        const { result } = renderHook(() => useReducer(gameReducer, initialState));
-    
-        // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
-        const [, dispatch] = result.current;
-    
-        // "create_tile" típusú akció végrehajtása az állapot módosítására.
-        act(() => {
-          dispatch({ type: "create_tile", tile: tile1 });
-          dispatch({ type: "create_tile", tile: tile2 });
-          dispatch({type:"move_up"})
-        });
-    
-        // Az állapot frissítése a "result" objektum segítségével.
-        const [stateBefore] = result.current;
-        expect(Object.values(stateBefore.tiles)).toHaveLength(2)
-        act(() =>dispatch({type:"clean_up"}))
-        const [stateAfter] = result.current;
-        expect(Object.values(stateAfter.tiles)).toHaveLength(1)
-      })
-    });
+  //TODO csempe eltávolitása
+  describe("clean up", () => {
+    it("should remove tiles that are not referenced on the board state", () => {
+      const tile1: Tile = {
+        position: [0, 1],
+        value: 2,
+      };
+      const tile2: Tile = {
+        position: [0, 3],
+        value: 2,
+      };
 
+      // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+      const { result } = renderHook(() =>
+        useReducer(gameReducer, initialState),
+      );
+
+      // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+      const [, dispatch] = result.current;
+
+      // "create_tile" típusú akció végrehajtása az állapot módosítására.
+      act(() => {
+        dispatch({ type: "create_tile", tile: tile1 });
+        dispatch({ type: "create_tile", tile: tile2 });
+        dispatch({ type: "move_up" });
+      });
+
+      // Az állapot frissítése a "result" objektum segítségével.
+      const [stateBefore] = result.current;
+      expect(Object.values(stateBefore.tiles)).toHaveLength(2);
+      act(() => dispatch({ type: "clean_up" }));
+      const [stateAfter] = result.current;
+      expect(Object.values(stateAfter.tiles)).toHaveLength(1);
+    });
+  });
 
   // "create_tile" típusú akció tesztje.
   describe("create_tile", () => {
@@ -618,6 +619,4 @@ describe("gameReducer", () => {
     expect(isNil(stateAfter.board[1][2])).toBeTruthy();
     expect(stateAfter.tiles[stateAfter.board[1][3]].value).toBe(4);
   });
-
-
 });
