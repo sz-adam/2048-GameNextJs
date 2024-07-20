@@ -31,7 +31,9 @@ describe("gameReducer", () => {
 
       // Az elvárt eredmények ellenőrzése.
       expect(state.board[0][0]).toBeDefined(); // Az állapotban lévő táblának tartalmaznia kell az új csempét.
-      expect(Object.values(state.tiles)).toEqual([tile]); // Az állapotban lévő csempéknek tartalmaznia kell az új csempét.
+      expect(Object.values(state.tiles)).toEqual([
+        { id: state.board[0][0], ...tile },
+      ]); // Az állapotban lévő csempéknek tartalmaznia kell az új csempét.
     });
   });
 
@@ -405,5 +407,180 @@ describe("gameReducer", () => {
     // ellenörzés hogy a pozició üres-e
 
     expect(typeof stateBefore.board[1][3]).toBe("string");
+  });
+
+  //TODO számok egyesítése felfelé lépéssel
+  it("should merge tiles with the same values", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 2,
+    };
+    const tile2: Tile = {
+      position: [0, 3],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(isNil(stateBefore.board[0][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+    expect(isNil(stateBefore.board[2][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_up" }));
+
+    const [stateAfter] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(stateAfter.tiles[stateAfter.board[0][0]].value).toBe(4);
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[2][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[3][0])).toBeTruthy();
+  });
+
+  //TODO számok egyesítése lefelé
+  it("should merge tiles with the same values", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 2,
+    };
+    const tile2: Tile = {
+      position: [0, 3],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(isNil(stateBefore.board[0][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+    expect(isNil(stateBefore.board[2][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_down" }));
+
+    const [stateAfter] = result.current;
+
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[0][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[2][0])).toBeTruthy();
+    // ellenörzés hogy a pozició üres-e
+    expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(4);
+  });
+
+  //TODO számok egyesítése balra
+  it("should merge tiles with the same values", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 2,
+    };
+    const tile2: Tile = {
+      position: [3, 1],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+    expect(isNil(stateBefore.board[1][1])).toBeTruthy();
+    expect(isNil(stateBefore.board[1][2])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][3]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_left" }));
+
+    const [stateAfter] = result.current;
+    expect(stateAfter.tiles[stateAfter.board[1][0]].value).toBe(4);
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[1][1])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][1])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][3])).toBeTruthy();
+  });
+
+  //TODO számok egyesítése jobbra lépéssel
+  it("should merge tiles with the same values", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 2,
+    };
+    const tile2: Tile = {
+      position: [3, 1],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+    expect(isNil(stateBefore.board[1][1])).toBeTruthy();
+    expect(isNil(stateBefore.board[1][2])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][3]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_right" }));
+
+    const [stateAfter] = result.current;
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][1])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][2])).toBeTruthy();
+    expect(stateAfter.tiles[stateAfter.board[1][3]].value).toBe(4);
   });
 });

@@ -1,7 +1,7 @@
 import { tileCountPerDimension } from "@/constants";
 import { Tile, TileMap } from "@/models/tile";
 import { uid } from "uid";
-import { isNil } from "lodash";
+import { isNil, values } from "lodash";
 
 // State típus definiálása: tartalmazza a board és tiles objektumokat
 type State = { board: string[][]; tiles: TileMap };
@@ -47,7 +47,7 @@ export default function gameReducer(
         board: newBoard,
         tiles: {
           ...state.tiles, // A jelenlegi csempe objektumok másolása
-          [tileId]: action.tile, // Az új csempe hozzáadása az azonosítóval
+          [tileId]: { id: tileId, ...action.tile }, // Az új csempe hozzáadása az azonosítóval
         },
       };
     }
@@ -69,6 +69,11 @@ export default function gameReducer(
           //ha létezik a csempe
           if (!isNil(tileId)) {
             if (previusTile?.value === currentTile.value) {
+              newTiles[previusTile.id as string] = {
+                ...currentTile,
+                value: previusTile.value * 2,
+              };
+
               //létrehoz egy új csempét a currenTile alapján és egyel fentebb mozgatja
               newTiles[tileId] = {
                 ...currentTile,
@@ -109,12 +114,16 @@ export default function gameReducer(
         for (let y = 0; y < tileCountPerDimension; y++) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
-          const currenTile = state.tiles[tileId];
+          const currentTile = state.tiles[tileId];
           //ha létezik a csempe
           if (!isNil(tileId)) {
-            if (previusTile?.value === currenTile.value) {
+            if (previusTile?.value === currentTile.value) {
+              newTiles[previusTile.id as string] = {
+                ...currentTile,
+                value: previusTile.value * 2,
+              };
               newTiles[tileId] = {
-                ...currenTile,
+                ...currentTile,
                 position: [x, newY + 1],
               };
               previusTile = undefined;
@@ -124,7 +133,7 @@ export default function gameReducer(
             newBoard[newY][x] = tileId;
             //aktuális csempe másolása
             newTiles[tileId] = {
-              ...currenTile,
+              ...currentTile,
               position: [x, newY], //új pozició beállítása
             };
             previusTile = newTiles[tileId];
@@ -153,6 +162,10 @@ export default function gameReducer(
           //ha létezik a csempe
           if (!isNil(tileId)) {
             if (previusTile?.value === currentTile.value) {
+              newTiles[previusTile.id as string] = {
+                ...currentTile,
+                value: previusTile.value * 2,
+              };
               newTiles[tileId] = {
                 ...currentTile,
                 position: [newX - 1, y],
@@ -196,6 +209,10 @@ export default function gameReducer(
           //ha létezik a csempe
           if (!isNil(tileId)) {
             if (previusTile?.value === currentTile.value) {
+              newTiles[previusTile.id as string] = {
+                ...currentTile,
+                value: previusTile.value * 2,
+              };
               newTiles[tileId] = {
                 ...currentTile,
                 position: [newX + 1, y],
