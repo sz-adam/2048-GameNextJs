@@ -36,22 +36,25 @@ export default function gameReducer(
   switch (
     action.type // Az akció típusa alapján történő elágazás
   ) {
-    case "clean_up":{
-      const flattenBoard = flattenDeep(state.board)
-      const newTiles: TileMap =flattenBoard.reduce((result, tileId:string) =>{
-          if(isNil(tileId)){
-            return result
+    case "clean_up": {
+      const flattenBoard = flattenDeep(state.board);
+      const newTiles: TileMap = flattenBoard.reduce(
+        (result, tileId: string) => {
+          if (isNil(tileId)) {
+            return result;
           }
-          return{
+          return {
             ...result,
-            [tileId]:state.tiles[tileId],
-          }
-      },{})
+            [tileId]: state.tiles[tileId],
+          };
+        },
+        {},
+      );
 
-      return{
+      return {
         ...state,
-        tiles:newTiles,
-      }
+        tiles: newTiles,
+      };
     }
     case "create_tile": {
       // Ha az akció típusa "create_tile"

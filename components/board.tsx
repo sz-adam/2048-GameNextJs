@@ -3,6 +3,7 @@ import { useEffect, useReducer, useRef } from "react";
 import gameReducer, { initialState } from "@/reducers/game-reducer";
 import Tile from "./tile";
 import { Tile as TileModel } from "@/models/tile";
+import { mergeAnimationDuration } from "@/constants";
 
 export default function Board() {
   // A játékállapot (state) és az állapotkezelő (reducer) használata
@@ -28,12 +29,10 @@ export default function Board() {
         dispatch({ type: "move_right" }); // 'move_Right'
         break;
     }
-
-    dispatch({ type:"clean_up"})
+    //csempe eltünésének lassítása
+    setTimeout(() => dispatch({ type: "clean_up" }), mergeAnimationDuration);
   };
 
-
-  
   const renderGrid = () => {
     //üres tömb ahová a cella elemek kerülnek
     const cells: JSX.Element[] = [];
