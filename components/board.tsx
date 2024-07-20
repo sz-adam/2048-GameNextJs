@@ -28,7 +28,12 @@ export default function Board() {
         dispatch({ type: "move_right" }); // 'move_Right'
         break;
     }
+
+    dispatch({ type:"clean_up"})
   };
+
+
+  
   const renderGrid = () => {
     //üres tömb ahová a cella elemek kerülnek
     const cells: JSX.Element[] = [];

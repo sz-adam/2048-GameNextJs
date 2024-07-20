@@ -1,7 +1,7 @@
 import { tileCountPerDimension } from "@/constants";
 import { Tile, TileMap } from "@/models/tile";
 import { uid } from "uid";
-import { isNil, values } from "lodash";
+import { flattenDeep, isNil, result, values } from "lodash";
 
 // State típus definiálása: tartalmazza a board és tiles objektumokat
 type State = { board: string[][]; tiles: TileMap };
@@ -12,7 +12,8 @@ type Action =
   | { type: "move_up" }
   | { type: "move_down" }
   | { type: "move_left" }
-  | { type: "move_right" };
+  | { type: "move_right" }
+  | { type: "clean_up" };
 
 // Függvény a játék tábla létrehozásához, alapértelmezett méret 4x4
 function createBoard() {
@@ -35,6 +36,23 @@ export default function gameReducer(
   switch (
     action.type // Az akció típusa alapján történő elágazás
   ) {
+    case "clean_up":{
+      const flattenBoard = flattenDeep(state.board)
+      const newTiles: TileMap =flattenBoard.reduce((result, tileId:string) =>{
+          if(isNil(tileId)){
+            return result
+          }
+          return{
+            ...result,
+            [tileId]:state.tiles[tileId],
+          }
+      },{})
+
+      return{
+        ...state,
+        tiles:newTiles,
+      }
+    }
     case "create_tile": {
       // Ha az akció típusa "create_tile"
       const tileId = uid(); // Egyedi azonosító generálása a csempének
