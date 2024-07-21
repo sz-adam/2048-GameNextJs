@@ -1,37 +1,42 @@
 import styles from "@/styles/board.module.css";
-import { useEffect, useReducer, useRef } from "react";
-import gameReducer, { initialState } from "@/reducers/game-reducer";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import Tile from "./tile";
 import { Tile as TileModel } from "@/models/tile";
 import { mergeAnimationDuration } from "@/constants";
+import { GameContext } from "@/context/game-context";
 
 export default function Board() {
+  const { appendRandomTile, gameState, dispatch } = useContext(GameContext);
   // A játékállapot (state) és az állapotkezelő (reducer) használata
-  const [gameState, dispatch] = useReducer(gameReducer, initialState);
 
   // Egy referencia a komponens inicializálásának követésére
   const initialized = useRef(false);
 
   // Billentyűlenyomás kezelő függvény
-  const handleKeydown = (e: KeyboardEvent) => {
-    e.preventDefault();
-    switch (e.code) {
-      case "ArrowUp":
-        dispatch({ type: "move_up" }); // 'move_up'
-        break;
-      case "ArrowDown":
-        dispatch({ type: "move_down" }); // 'move_down'
-        break;
-      case "ArrowLeft":
-        dispatch({ type: "move_left" }); // 'move_left'
-        break;
-      case "ArrowRight":
-        dispatch({ type: "move_right" }); // 'move_Right'
-        break;
-    }
-    //csempe eltünésének lassítása
-    setTimeout(() => dispatch({ type: "clean_up" }), mergeAnimationDuration);
-  };
+  const handleKeydown = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      switch (e.code) {
+        case "ArrowUp":
+          dispatch({ type: "move_up" }); // 'move_up'
+          break;
+        case "ArrowDown":
+          dispatch({ type: "move_down" }); // 'move_down'
+          break;
+        case "ArrowLeft":
+          dispatch({ type: "move_left" }); // 'move_left'
+          break;
+        case "ArrowRight":
+          dispatch({ type: "move_right" }); // 'move_Right'
+          break;
+      }
+      //csempe eltünésének lassítása
+      setTimeout(() => {
+        dispatch({ type: "clean_up" }), appendRandomTile();
+      }, mergeAnimationDuration);
+    },
+    [appendRandomTile, dispatch],
+  );
 
   const renderGrid = () => {
     //üres tömb ahová a cella elemek kerülnek
@@ -66,7 +71,7 @@ export default function Board() {
 
       initialized.current = true; // Beállítja, hogy a komponens inicializálva van
     }
-  }, []);
+  }, [dispatch]);
 
   //useEffect a billentyűzet lenyomásához
   useEffect(() => {
@@ -74,7 +79,7 @@ export default function Board() {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, []);
+  }, [handleKeydown]);
 
   return (
     <div className={styles.board}>
