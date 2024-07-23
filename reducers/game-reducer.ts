@@ -3,8 +3,8 @@ import { Tile, TileMap } from "@/models/tile";
 import { uid } from "uid";
 import { flattenDeep, isNil, result, values } from "lodash";
 
-// State típus definiálása: tartalmazza a board és tiles objektumokat
-type State = { board: string[][]; tiles: TileMap };
+// State típus definiálása: tartalmazza a board és tiles objektumokat, tileyByIds ami elsönek üres tömb
+type State = { board: string[][]; tiles: TileMap; tilesByIds: string[] };
 
 // Action típus definiálása: tartalmazza a type és tile objektumokat
 type Action =
@@ -26,7 +26,11 @@ function createBoard() {
 }
 
 // Kezdeti állapot inicializálása: üres board és tiles
-export const initialState: State = { board: createBoard(), tiles: {} };
+export const initialState: State = {
+  board: createBoard(),
+  tiles: {},
+  tilesByIds: [],
+};
 
 // gameReducer függvény exportálása, ami kezeli az állapot változásokat
 export default function gameReducer(
@@ -54,6 +58,7 @@ export default function gameReducer(
       return {
         ...state,
         tiles: newTiles,
+        tilesByIds: Object.keys(newTiles),
       };
     }
     case "create_tile": {
@@ -70,6 +75,7 @@ export default function gameReducer(
           ...state.tiles, // A jelenlegi csempe objektumok másolása
           [tileId]: { id: tileId, ...action.tile }, // Az új csempe hozzáadása az azonosítóval
         },
+        tilesByIds: [...state.tilesByIds, tileId],
       };
     }
     //mozgatás felfelé
@@ -132,7 +138,7 @@ export default function gameReducer(
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = tileCountPerDimension - 1; //új y kordináták lekérése
         let previusTile: Tile | undefined;
-        for (let y = 0; y < tileCountPerDimension; y++) {
+        for (let y = tileCountPerDimension - 1; y >= 0; y--) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
           const currentTile = state.tiles[tileId];
@@ -223,7 +229,7 @@ export default function gameReducer(
         let newX = tileCountPerDimension - 1; //új kordináták lekérése
         let previusTile: Tile | undefined;
 
-        for (let x = 0; x < tileCountPerDimension; x++) {
+        for (let x = tileCountPerDimension - 1; x >= 0; x--) {
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
           const currentTile = state.tiles[tileId];

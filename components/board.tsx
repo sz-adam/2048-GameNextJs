@@ -6,7 +6,7 @@ import { mergeAnimationDuration } from "@/constants";
 import { GameContext } from "@/context/game-context";
 
 export default function Board() {
-  const { appendRandomTile, gameState, dispatch } = useContext(GameContext);
+  const { appendRandomTile, getTiles, dispatch } = useContext(GameContext);
   // A játékállapot (state) és az állapotkezelő (reducer) használata
 
   // Egy referencia a komponens inicializálásának követésére
@@ -53,11 +53,11 @@ export default function Board() {
 
   const renderTiles = () => {
     // Függvény a csempék renderelése
-    return Object.values(gameState.tiles).map(
+    return getTiles().map(
       // Az összes csempe értékének lekérése és azok leképezése JSX elemekké
-      (tile: TileModel, index: number) => {
+      (tile: TileModel) => {
         // Minden csempére végrehajtja a következő függvényt
-        return <Tile key={`${index}`} {...tile} />; // Tile komponens renderelése egyedi kulccsal és az összes csempe tulajdonságával
+        return <Tile key={`${tile.id}`} {...tile} />; // Tile komponens renderelése egyedi kulccsal és az összes csempe tulajdonságával
       },
     );
   };

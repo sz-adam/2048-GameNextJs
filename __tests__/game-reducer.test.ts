@@ -36,9 +36,13 @@ describe("gameReducer", () => {
       // Az állapot frissítése a "result" objektum segítségével.
       const [stateBefore] = result.current;
       expect(Object.values(stateBefore.tiles)).toHaveLength(2);
+      expect(stateBefore.tilesByIds).toHaveLength(2);
+
       act(() => dispatch({ type: "clean_up" }));
+
       const [stateAfter] = result.current;
       expect(Object.values(stateAfter.tiles)).toHaveLength(1);
+      expect(stateAfter.tilesByIds).toHaveLength(1);
     });
   });
 
@@ -64,12 +68,12 @@ describe("gameReducer", () => {
 
       // Az állapot frissítése a "result" objektum segítségével.
       const [state] = result.current;
+      const tileId = state.board[0][0];
 
       // Az elvárt eredmények ellenőrzése.
-      expect(state.board[0][0]).toBeDefined(); // Az állapotban lévő táblának tartalmaznia kell az új csempét.
-      expect(Object.values(state.tiles)).toEqual([
-        { id: state.board[0][0], ...tile },
-      ]); // Az állapotban lévő csempéknek tartalmaznia kell az új csempét.
+      expect(tileId).toBeDefined(); // Az állapotban lévő táblának tartalmaznia kell az új csempét.
+      expect(Object.values(state.tiles)).toEqual([{ id: tileId, ...tile }]); // Az állapotban lévő csempéknek tartalmaznia kell az új csempét.
+      expect(state.tilesByIds).toEqual([tileId]);
     });
   });
 
@@ -618,5 +622,92 @@ describe("gameReducer", () => {
     expect(isNil(stateAfter.board[1][1])).toBeTruthy();
     expect(isNil(stateAfter.board[1][2])).toBeTruthy();
     expect(stateAfter.tiles[stateAfter.board[1][3]].value).toBe(4);
+  });
+
+  //TODO lapok eredeti sorrendje
+  it("should keep the original order of tiles(regression test)", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 4,
+    };
+    const tile2: Tile = {
+      position: [0, 3],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(isNil(stateBefore.board[0][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(4);
+    expect(isNil(stateBefore.board[2][0])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_down" }));
+
+    const [stateAfter] = result.current;
+
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[0][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+    expect(stateAfter.tiles[stateAfter.board[2][0]].value).toBe(4);
+    expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(2);
+  });
+
+  //TODO lapok eredeti sorrendje jobbra
+  it("should keep the original order of tiles(regression test)", () => {
+    // Két csempe létrehozása különböző pozíciókban.
+    const tile1: Tile = {
+      position: [0, 1],
+      value: 4,
+    };
+    const tile2: Tile = {
+      position: [3, 1],
+      value: 2,
+    };
+
+    // Teszthorgony létrehozása, a "gameReducer" és az "initialState" felhasználásával.
+    const { result } = renderHook(() => useReducer(gameReducer, initialState));
+
+    // A horgonyból a "dispatch" és az aktuális állapot kinyerése.
+    const [, dispatch] = result.current;
+
+    // "create_tile" típusú akció végrehajtása az állapot módosítására.
+    act(() => {
+      dispatch({ type: "create_tile", tile: tile1 });
+      dispatch({ type: "create_tile", tile: tile2 });
+    });
+
+    // Az állapot frissítése a "result" objektum segítségével.
+    const [stateBefore] = result.current;
+    // ellenörzés hogy a pozició üres-e
+    expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(4);
+    expect(isNil(stateBefore.board[1][1])).toBeTruthy();
+    expect(isNil(stateBefore.board[1][2])).toBeTruthy();
+    expect(stateBefore.tiles[stateBefore.board[1][3]].value).toBe(2);
+
+    // "move_up" típusú akció végrehajtása az állapot módosítására.
+    act(() => dispatch({ type: "move_right" }));
+
+    const [stateAfter] = result.current;
+    //ellenörzés hogy a pozicióban van-e csempe
+    expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+    expect(isNil(stateAfter.board[1][1])).toBeTruthy();
+    expect(stateAfter.tiles[stateAfter.board[1][2]].value).toBe(4);
+    expect(stateAfter.tiles[stateAfter.board[1][3]].value).toBe(2);
   });
 });
