@@ -1,8 +1,8 @@
-import { tileCountPerDimension } from "@/constants";
+import { mergeAnimationDuration, tileCountPerDimension } from "@/constants";
 import { Tile } from "@/models/tile";
 import gameReducer, { initialState } from "@/reducers/game-reducer";
 import { isNil } from "lodash";
-import { createContext, PropsWithChildren, useReducer } from "react";
+import { createContext, PropsWithChildren, useEffect, useReducer } from "react";
 
 // GameContext létrehozása alapértelmezett értékekkel
 export const GameContext = createContext({
@@ -50,6 +50,14 @@ export default function GameProvider({ children }: PropsWithChildren) {
       (tileId: string) => gameState.tiles[tileId],
     );
   };
+
+  useEffect(() => {
+    if(gameState.hasChanged){
+      setTimeout(() => {
+        dispatch({ type: "clean_up" }), appendRandomTile();
+      }, mergeAnimationDuration);
+    }
+  },[gameState.hasChanged])
 
   // GameContext.Provider visszaadása a gyermek komponensekkel
   return (

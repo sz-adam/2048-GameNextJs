@@ -2,11 +2,10 @@ import styles from "@/styles/board.module.css";
 import { useCallback, useContext, useEffect, useRef } from "react";
 import Tile from "./tile";
 import { Tile as TileModel } from "@/models/tile";
-import { mergeAnimationDuration } from "@/constants";
 import { GameContext } from "@/context/game-context";
 
 export default function Board() {
-  const { appendRandomTile, getTiles, dispatch } = useContext(GameContext);
+  const { getTiles, dispatch } = useContext(GameContext);
   // A játékállapot (state) és az állapotkezelő (reducer) használata
 
   // Egy referencia a komponens inicializálásának követésére
@@ -30,12 +29,9 @@ export default function Board() {
           dispatch({ type: "move_right" }); // 'move_Right'
           break;
       }
-      //csempe eltünésének lassítása
-      setTimeout(() => {
-        dispatch({ type: "clean_up" }), appendRandomTile();
-      }, mergeAnimationDuration);
+     
     },
-    [appendRandomTile, dispatch],
+    [dispatch],
   );
 
   const renderGrid = () => {

@@ -1,10 +1,10 @@
 import { tileCountPerDimension } from "@/constants";
 import { Tile, TileMap } from "@/models/tile";
 import { uid } from "uid";
-import { flattenDeep, isNil, result, values } from "lodash";
+import { flattenDeep, isEqual, isNil, result, values } from "lodash";
 
 // State típus definiálása: tartalmazza a board és tiles objektumokat, tileyByIds ami elsönek üres tömb
-type State = { board: string[][]; tiles: TileMap; tilesByIds: string[] };
+type State = { board: string[][]; tiles: TileMap; tilesByIds: string[] ;hasChanged: boolean};
 
 // Action típus definiálása: tartalmazza a type és tile objektumokat
 type Action =
@@ -30,6 +30,7 @@ export const initialState: State = {
   board: createBoard(),
   tiles: {},
   tilesByIds: [],
+  hasChanged:false,
 };
 
 // gameReducer függvény exportálása, ami kezeli az állapot változásokat
@@ -59,6 +60,7 @@ export default function gameReducer(
         ...state,
         tiles: newTiles,
         tilesByIds: Object.keys(newTiles),
+        hasChanged:false
       };
     }
     case "create_tile": {
@@ -82,6 +84,7 @@ export default function gameReducer(
     case "move_up": {
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
+      let hasChanged = false;
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = 0; //új kordináták lekérése
@@ -107,6 +110,7 @@ export default function gameReducer(
                 position: [x, newY - 1],
               };
               previusTile = undefined;
+              hasChanged=true;
               continue;
             }
 
@@ -119,6 +123,9 @@ export default function gameReducer(
               position: [x, newY],
             };
             previusTile = newTiles[tileId];
+            if(!isEqual(currentTile.position,[x, newY])){
+              hasChanged=true;
+            }
             newY++; //kordináta növelése
           }
         }
@@ -127,6 +134,7 @@ export default function gameReducer(
         ...state,
         board: newBoard,
         tiles: newTiles,
+        hasChanged,
       };
     }
 
@@ -134,6 +142,7 @@ export default function gameReducer(
     case "move_down": {
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
+      let hasChanged=false;
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = tileCountPerDimension - 1; //új y kordináták lekérése
@@ -154,6 +163,7 @@ export default function gameReducer(
                 position: [x, newY + 1],
               };
               previusTile = undefined;
+              hasChanged = true;
               continue;
             }
             // Az új táblára helyezés
@@ -164,6 +174,9 @@ export default function gameReducer(
               position: [x, newY], //új pozició beállítása
             };
             previusTile = newTiles[tileId];
+            if(!isEqual(currentTile.position,[x, newY])){
+              hasChanged=true;
+            }
             newY--; //kordináta csökkentése
           }
         }
@@ -172,12 +185,14 @@ export default function gameReducer(
         ...state,
         board: newBoard,
         tiles: newTiles,
+        hasChanged,
       };
     }
     //bal mozgás
     case "move_left": {
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
+      let hasChanged = false;
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = 0; //új kordináták lekérése
@@ -198,6 +213,7 @@ export default function gameReducer(
                 position: [newX - 1, y],
               };
               previusTile = undefined;
+              hasChanged = true;
               continue;
             }
             //új táblára helyezzük
@@ -209,6 +225,9 @@ export default function gameReducer(
               position: [newX, y],
             };
             previusTile = newTiles[tileId];
+            if(!isEqual(currentTile.position,[newX, y])){
+              hasChanged=true;
+            }
             newX++; //kordináta növelése
           }
         }
@@ -217,6 +236,7 @@ export default function gameReducer(
         ...state,
         board: newBoard,
         tiles: newTiles,
+        hasChanged,
       };
     }
 
@@ -224,6 +244,8 @@ export default function gameReducer(
     case "move_right": {
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
+      let hasChanged = false;
+
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = tileCountPerDimension - 1; //új kordináták lekérése
@@ -245,6 +267,7 @@ export default function gameReducer(
                 position: [newX + 1, y],
               };
               previusTile = undefined;
+              hasChanged=true
               continue;
             }
             //új táblára helyezzük
@@ -256,6 +279,9 @@ export default function gameReducer(
               position: [newX, y],
             };
             previusTile = newTiles[tileId];
+            if(!isEqual(currentTile.position,[newX, y])){
+              hasChanged=true;
+            }
             newX--; //kordináta növelése
           }
         }
@@ -264,6 +290,7 @@ export default function gameReducer(
         ...state,
         board: newBoard,
         tiles: newTiles,
+        hasChanged,
       };
     }
     default:
