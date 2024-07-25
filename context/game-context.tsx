@@ -6,7 +6,7 @@ import { createContext, PropsWithChildren, useEffect, useReducer } from "react";
 
 // GameContext létrehozása alapértelmezett értékekkel
 export const GameContext = createContext({
-  appendRandomTile: () => {}, // Üres függvény
+ score:0,
   getTiles: () => [] as Tile[], // Kezdeti játék állapot
   dispatch: (_: any) => {}, // Üres dispatch függvény
 });
@@ -59,9 +59,11 @@ export default function GameProvider({ children }: PropsWithChildren) {
     }
   },[gameState.hasChanged])
 
+
+
   // GameContext.Provider visszaadása a gyermek komponensekkel
   return (
-    <GameContext.Provider value={{ appendRandomTile, getTiles, dispatch }}>
+    <GameContext.Provider value={{ score:gameState.score, getTiles, dispatch }}>
       {children}
     </GameContext.Provider>
   );
