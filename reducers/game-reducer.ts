@@ -1,7 +1,7 @@
 import { tileCountPerDimension } from "@/constants";
 import { Tile, TileMap } from "@/models/tile";
 import { uid } from "uid";
-import { flattenDeep, isEqual, isNil, result, values } from "lodash";
+import { flattenDeep, isEqual, isNil } from "lodash";
 
 // State típus definiálása: tartalmazza a board és tiles objektumokat, tileyByIds ami elsönek üres tömb
 type State = {
@@ -223,7 +223,7 @@ export default function gameReducer(
               score += previusTile.value * 2;
 
               newTiles[previusTile.id as string] = {
-                ...currentTile,
+                ...previusTile,
                 value: previusTile.value * 2,
               };
               newTiles[tileId] = {
@@ -280,7 +280,7 @@ export default function gameReducer(
               score += previusTile.value * 2;
 
               newTiles[previusTile.id as string] = {
-                ...currentTile,
+                ...previusTile,
                 value: previusTile.value * 2,
               };
               newTiles[tileId] = {
