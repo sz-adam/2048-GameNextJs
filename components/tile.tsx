@@ -33,7 +33,7 @@ function Tile({ position, value }: TileProps) {
   };
 
   return (
-    <div className={styles.tile} style={style}>
+    <div className={`${styles.tile} ${styles[`tile${value}`]}`} style={style}>
       {value}
     </div>
   );
