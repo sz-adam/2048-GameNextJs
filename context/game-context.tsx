@@ -6,7 +6,7 @@ import { createContext, PropsWithChildren, useEffect, useReducer } from "react";
 
 // GameContext létrehozása alapértelmezett értékekkel
 export const GameContext = createContext({
- score:0,
+  score: 0,
   getTiles: () => [] as Tile[], // Kezdeti játék állapot
   dispatch: (_: any) => {}, // Üres dispatch függvény
 });
@@ -44,7 +44,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
       dispatch({ type: "create_tile", tile: newTile }); // Akció dispatch-elése a reducer felé
     }
   };
-//csempe azonosítoi tömbben
+  //csempe azonosítoi tömbben
   const getTiles = () => {
     return gameState.tilesByIds.map(
       (tileId: string) => gameState.tiles[tileId],
@@ -52,18 +52,18 @@ export default function GameProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
-    if(gameState.hasChanged){
+    if (gameState.hasChanged) {
       setTimeout(() => {
         dispatch({ type: "clean_up" }), appendRandomTile();
       }, mergeAnimationDuration);
     }
-  },[gameState.hasChanged])
-
-
+  }, [gameState.hasChanged]);
 
   // GameContext.Provider visszaadása a gyermek komponensekkel
   return (
-    <GameContext.Provider value={{ score:gameState.score, getTiles, dispatch }}>
+    <GameContext.Provider
+      value={{ score: gameState.score, getTiles, dispatch }}
+    >
       {children}
     </GameContext.Provider>
   );

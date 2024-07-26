@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import Board from "@/components/board";
 import Score from "@/components/score";
-import styles from"@/styles/index.module.css"
+import styles from "@/styles/index.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +21,6 @@ export default function Home() {
       </header>
 
       <main>
-       
         <Board />
       </main>
       <footer>Created by Adam</footer>

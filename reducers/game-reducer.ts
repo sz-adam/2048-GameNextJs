@@ -153,7 +153,7 @@ export default function gameReducer(
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
       let hasChanged = false;
-      let {score} =state;
+      let { score } = state;
 
       for (let x = 0; x < tileCountPerDimension; x++) {
         let newY = tileCountPerDimension - 1; //új y kordináták lekérése
@@ -199,7 +199,7 @@ export default function gameReducer(
         board: newBoard,
         tiles: newTiles,
         hasChanged,
-        score
+        score,
       };
     }
     //bal mozgás
@@ -207,13 +207,12 @@ export default function gameReducer(
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
       let hasChanged = false;
-      let {score} =state;
+      let { score } = state;
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = 0; //új kordináták lekérése
         let previusTile: Tile | undefined;
         for (let x = 0; x < tileCountPerDimension; x++) {
-          
           // Az aktuális csempe azonosítójának lekérése
           const tileId = state.board[y][x];
           const currentTile = state.tiles[tileId];
@@ -264,7 +263,7 @@ export default function gameReducer(
       const newBoard = createBoard(); //üres tábla
       const newTiles: TileMap = {}; //csempe térkép inicializálása
       let hasChanged = false;
-      let {score}=state;
+      let { score } = state;
 
       for (let y = 0; y < tileCountPerDimension; y++) {
         let newX = tileCountPerDimension - 1; //új kordináták lekérése
