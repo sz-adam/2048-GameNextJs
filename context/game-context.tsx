@@ -1,14 +1,23 @@
 import { mergeAnimationDuration, tileCountPerDimension } from "@/constants";
 import { Tile } from "@/models/tile";
 import gameReducer, { initialState } from "@/reducers/game-reducer";
-import { isNil } from "lodash";
-import { createContext, PropsWithChildren, useEffect, useReducer } from "react";
+import { isNil, throttle } from "lodash";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useReducer,
+} from "react";
+
+type MoveDirection = "move_up" | "move_down" | "move_left" | "move_right";
 
 // GameContext létrehozása alapértelmezett értékekkel
 export const GameContext = createContext({
   score: 0,
   getTiles: () => [] as Tile[], // Kezdeti játék állapot
-  dispatch: (_: any) => {}, // Üres dispatch függvény
+  moveTiles: (_: MoveDirection) => {},
+  startGame: () => {},
 });
 
 // GameProvider komponens exportálása, ami a játék logikát és állapotot kezeli
@@ -51,6 +60,20 @@ export default function GameProvider({ children }: PropsWithChildren) {
     );
   };
 
+  const moveTiles = useCallback(
+    throttle(
+      (type: MoveDirection) => dispatch({ type }),
+      mergeAnimationDuration * 1.05,
+      { trailing: false },
+    ),
+    [dispatch],
+  );
+
+  const startGame = () => {
+    dispatch({ type: "create_tile", tile: { position: [0, 1], value: 2 } }); // Az első csempe létrehozása a pozíció [0, 1] és érték 2
+    dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } }); // A második csempe létrehozása a pozíció [0, 2] és érték 2
+  };
+
   useEffect(() => {
     if (gameState.hasChanged) {
       setTimeout(() => {
@@ -62,7 +85,7 @@ export default function GameProvider({ children }: PropsWithChildren) {
   // GameContext.Provider visszaadása a gyermek komponensekkel
   return (
     <GameContext.Provider
-      value={{ score: gameState.score, getTiles, dispatch }}
+      value={{ score: gameState.score, getTiles, moveTiles, startGame }}
     >
       {children}
     </GameContext.Provider>
